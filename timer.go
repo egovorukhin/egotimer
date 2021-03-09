@@ -1,47 +1,51 @@
-package timer
+package egotimer
 
 import (
 	"time"
 )
 
 type Timer struct {
-	ticker *time.Ticker
-	done   chan bool
-	f      handler
+	ticker   *time.Ticker
+	duration time.Duration
+	f        handler
 }
 
+//Функция которая должна выполниться
+//по истечении указанного времени
 type handler func(t time.Time) bool
 
-func New(d time.Duration) *Timer {
+//Инициализируем таймер, передаем длительность
+func New(d time.Duration, f handler) *Timer {
 	return &Timer{
-		ticker: time.NewTicker(d),
-		done:   make(chan bool),
+		duration: d,
+		f:        f,
 	}
 }
 
-func (timer *Timer) Start(f func(t time.Time) bool) {
-	timer.f = f
-	for {
-		select {
-		case <-timer.done:
+//Запускаем таймер. Если по истечении времени функция,
+//после выполнения, вернула true, то останавливаем таймер,
+//иначе продолжаем движение таймера.
+func (timer *Timer) Start() {
+	timer.ticker = time.NewTicker(timer.duration)
+	for t := range timer.ticker.C {
+		if timer.f(t) {
 			return
-		case t := <-timer.ticker.C:
-			if f(t) {
-				return
-			}
 		}
 	}
 }
 
-func (timer *Timer) Reset(d time.Duration)  {
+//Передаем новую переменную для времени срабатывания
+func (timer *Timer) Reset(d time.Duration) {
 	timer.ticker.Reset(d)
 }
 
+//Перезапускаем таймер
 func (timer *Timer) Restart() {
 	timer.Stop()
-	timer.Start(timer.f)
+	timer.Start()
 }
 
+//Останавливаем таймер,
 func (timer *Timer) Stop() {
-	timer.done <- true
+	timer.ticker.Stop()
 }

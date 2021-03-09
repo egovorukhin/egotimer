@@ -7,7 +7,9 @@ import (
 )
 
 func TestStart(t *testing.T) {
+	//Объявляем счетчик
 	count := 0
+	//Инициализация таймера
 	timer := New(1*time.Second, func(t time.Time) bool {
 		if count == 5 {
 			return true
@@ -18,16 +20,19 @@ func TestStart(t *testing.T) {
 			t.Format("2006-01-02 15:04:05"))
 		return false
 	})
-	go func() {
-		timer.Start()
-	}()
+	//Запуск в отдельной горутине
+	go timer.Start()
+	//Ждем некоторое время для того чтобы функция Start отработала
 	time.Sleep(3 * time.Second)
+
 	fmt.Println("Перезапуск")
+	//Скидываем на ноль переменную счетчика
 	count = 0
-	go func() {
-		timer.Restart()
-	}()
+	//Перезапуск таймера в отдельной горутине
+	go timer.Restart()
+	//Ждем некоторое время для того чтобы функция Restart отработала
 	time.Sleep(5 * time.Second)
 	fmt.Println("Остановка")
+	//Остановка таймера
 	timer.Stop()
 }

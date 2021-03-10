@@ -11,7 +11,7 @@ func TestStart(t *testing.T) {
 	count := 0
 	//Инициализация таймера
 	timer := New(1*time.Second, func(t time.Time) bool {
-		if count == 5 {
+		if count == 15 {
 			return true
 		}
 		count++

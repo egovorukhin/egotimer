@@ -1,13 +1,15 @@
 package egotimer
 
 import (
+	"sync"
 	"time"
 )
 
 type Timer struct {
-	ticker   *time.Ticker
 	duration time.Duration
 	f        handler
+	mu       sync.Mutex
+	ticker   *time.Ticker
 }
 
 //Функция которая должна выполниться
@@ -45,7 +47,11 @@ func (timer *Timer) Restart() {
 	timer.Start()
 }
 
-//Останавливаем таймер,
+//Останавливаем таймер.
+//Mutex позволяет остановить
+//таймер во всех горутинах
 func (timer *Timer) Stop() {
+	timer.mu.Lock()
 	timer.ticker.Stop()
+	timer.mu.Unlock()
 }

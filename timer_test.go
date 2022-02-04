@@ -20,10 +20,13 @@ func TestStart(t *testing.T) {
 			t.Format("2006-01-02 15:04:05"))
 		return false
 	})
+	fmt.Printf("Количество итераций: %d\n", timer.Count)
 	//Запуск в отдельной горутине
 	go timer.Start()
 	//Ждем некоторое время для того чтобы функция Start отработала
 	time.Sleep(3 * time.Second)
+	fmt.Printf("Состояние таймера: %t\n", timer.IsStarted)
+	fmt.Printf("Количество итераций: %d\n", timer.Count)
 
 	fmt.Println("Перезапуск")
 	//Скидываем на ноль переменную счетчика
@@ -32,6 +35,7 @@ func TestStart(t *testing.T) {
 	go timer.Restart()
 	//Ждем некоторое время для того чтобы функция Restart отработала
 	time.Sleep(5 * time.Second)
+	fmt.Printf("Количество итераций: %d\n", timer.Count)
 	fmt.Println("Остановка")
 	//Остановка таймера
 	timer.Stop()
